@@ -1,0 +1,8 @@
+##NPM##
+node_modules
+
+## Compiled Files ##
+client/compiled/
+
+# Log files ##
+*.log

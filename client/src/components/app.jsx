@@ -1,20 +1,23 @@
+import React from 'react';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+
   }
+
   render() {
     return (
       <div>
-        <h1>Reactivity</h1>
+        {this.props.children}
       </div>
-      );
+    );
   }
+}
 
-};
 
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('app')
-);
+
+
+
+module.exports = App;

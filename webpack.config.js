@@ -8,6 +8,7 @@ var config = {
   entry: APP_DIR + '/src/index.js',
   output: {
     path: BUILD_DIR,
+    publicPath: '/compiled/',
     filename: 'bundle.js'
   },
   module : {
@@ -18,6 +19,10 @@ var config = {
         loader : 'babel-loader'
       }
     ]
+  },
+  devServer: {
+    historyApiFallback: true,
+    noInfo: true
   }
 };
 

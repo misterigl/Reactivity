@@ -22,7 +22,14 @@ var config = {
   },
   devServer: {
     historyApiFallback: true,
-    noInfo: true
+    noInfo: true,
+    stats: 'errors-only',
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:3000',
+        secure: false
+      }
+    }
   }
 };
 

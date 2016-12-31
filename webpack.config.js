@@ -20,6 +20,9 @@ var config = {
       }
     ]
   },
+  performance: {
+    hints: process.env.NODE_ENV === 'production' ? 'warning' : false
+  },
   devServer: {
     historyApiFallback: true,
     noInfo: true,

@@ -6,3 +6,6 @@ client/compiled/
 
 # Log files ##
 *.log
+
+# Mac DS Store #
+.DS_Store

@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/lib/migrate.js && webpack -p && nodemon server/server.js",
-    "dev": "cross-env NODE_ENV=development node server/lib/migrate.js && ( nodemon server/server.js & webpack-dev-server --content-base client --open --inline --hot )",
+    "start": "node db/lib/migrate.js && webpack -p && nodemon server/server.js",
+    "dev": "cross-env NODE_ENV=development node db/lib/migrate.js && ( nodemon server/server.js & webpack-dev-server --content-base client --open --inline --hot )",
     "build": "webpack -p"
   },
   "author": "",

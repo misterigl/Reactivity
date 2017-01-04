@@ -6,4 +6,27 @@ class Sport extends Model {
   }
 }
 
+Sport.relationMappings = {
+  activities: {
+    relation: Model.HasManyRelation,
+    modelClass: __dirname + '/Activity',
+    join: {
+      from: 'sports.id',
+      to: 'activities.id'
+    }
+  },
+  interestedUsers: {
+    relation: Model.ManyToManyRelation,
+    modelClass: __dirname + '/User',
+    join: {
+      from: 'sports.id',
+      through: {
+        from: 'interests.sportId',
+        to: 'interests.userId'
+      },
+      to: 'users.id'
+    }
+  }
+};
+
 module.exports = Sport;

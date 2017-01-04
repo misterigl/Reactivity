@@ -17,7 +17,7 @@ User.relationMappings = {
         to: 'users_activities.activityId',
         extra: ['status']
       },
-      to: 'activites.id'
+      to: 'activities.id'
     }
   },
   locations: {

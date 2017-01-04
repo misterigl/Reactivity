@@ -6,4 +6,15 @@ class Location extends Model {
   }
 }
 
+Location.relationMappings = {
+  activities: {
+    relation: Model.HasManyRelation,
+    modelClass: __dirname + '/Activity',
+    join: {
+      from: 'locations.id',
+      to: 'activities.id'
+    }
+  }
+};
+
 module.exports = Location;

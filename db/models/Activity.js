@@ -6,4 +6,36 @@ class Activity extends Model {
   }
 }
 
+Activity.relationMappings = {
+  users: {
+    relation: Model.ManyToManyRelation,
+    modelClass: __dirname + '/User',
+    join: {
+      from: 'activities.id',
+      through: {
+        from: 'users_activities.activityId',
+        to: 'users_activities.userId',
+        extra: ['status']
+      },
+      to: 'users.id'
+    }
+  },
+  sport: {
+    relation: Model.BelongsToOneRelation,
+    modelClass: __dirname + '/Sport',
+    join: {
+      from: 'activities.id',
+      to: 'sports.id'
+    }
+  },
+  location: {
+    relation: Model.BelongsToOneRelation,
+    modelClass: __dirname + '/Location',
+    join: {
+      from: 'activities.id',
+      to: 'locations.id'
+    }
+  }
+};
+
 module.exports = Activity;

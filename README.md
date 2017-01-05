@@ -16,9 +16,9 @@ Linux
   `CREATE USER [your linux username] SUPERUSER;`
   `sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"`
   `\q`
-  add "user: 'postgres', password: 'postgres'" to the connection objects in knexfile.js or via a separate ignored key file
+  add "user: 'postgres', password: 'postgres'" to the connection objects in knexfile.js
 
-Create and open database CLI:
+Create database and open CLI:
 `createdb reactivity`
 `psql reactivity`
 

@@ -11,19 +11,21 @@ app.use(morgan('dev'));
 
 app.use(express.static('client'));
 
+app.get('/api/test', function (req, res) {
+  res.send('Hey there HR 50')
+})
 
 app.get('*', function (req, res) {
   res.sendFile(path.resolve(__dirname + '/../client/index.html'));
 });
+io.on('connection', function(socket){
+  console.log('user', socket.id, 'connected');
+});
 
+setInterval(() => {
+  io.emit('ping', { data: (new Date())/1});
+}, 1000);
 
 server.listen(3000, function () {
   console.log(colors.green('\nReactivity app listening on port 3000!'));
-});
-
-io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
 });

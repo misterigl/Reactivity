@@ -5,26 +5,19 @@ var io = require('socket.io')(server);
 var path = require('path');
 var morgan = require('morgan');
 var colors = require('colors/safe');
+var passport = require('passport');
+var bodyParser = require('body-parser');
+
 
 app.use(morgan('dev'));
+app.use(bodyParser.json());
 
+app.use(passport.initialize());
 
 app.use(express.static('client'));
 
-app.get('/api/test', function (req, res) {
-  res.send('Hey there HR 50')
-})
-
-app.get('*', function (req, res) {
-  res.sendFile(path.resolve(__dirname + '/../client/index.html'));
-});
-io.on('connection', function(socket){
-  console.log('user', socket.id, 'connected');
-});
-
-setInterval(() => {
-  io.emit('ping', { data: (new Date())/1});
-}, 1000);
+require('./lib/auth.js')(passport);
+require('./lib/routes.js')(app, express, passport, io);
 
 server.listen(3000, function () {
   console.log(colors.green('\nReactivity app listening on port 3000!'));

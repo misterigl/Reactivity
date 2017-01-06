@@ -26,6 +26,8 @@ Install POSTGIS extension on DB from CLI (command line prompt should read 'react
 `CREATE EXTENSION postgis;`
 
 Troubleshoot postgres installation/startup -> `brew info postgres`
+
+After running migration script (npm run dev, npm run backend, or npm start) at least once, seed dev data with: `knex seed:run`
 ```
 
 run

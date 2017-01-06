@@ -4,15 +4,26 @@
 ### Setup Postgres/PostGIS/Knex CLI ###
 ```
 `npm install -g knex`
-`brew install postgres`
-`brew install postgis`
-`createdb reactivity`
 
-Open database CLI: 
+Mac
+  `brew install postgres`
+  `brew install postgis`
+
+Linux
+  `sudo apt-get install postgresql`
+  `sudo apt-get install postgis`
+  `sudo -u postgres psql`
+  `CREATE USER [your linux username] SUPERUSER;`
+  `sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"`
+  `\q`
+  add "user: 'postgres', password: 'postgres'" to the connection objects in knexfile.js
+
+Create database and open CLI:
+`createdb reactivity`
 `psql reactivity`
 
 Install POSTGIS extension on DB from CLI (command line prompt should read 'reactivity=#'):
-`CREATE EXTENSION postgis`
+`CREATE EXTENSION postgis;`
 
 Troubleshoot postgres installation/startup -> `brew info postgres`
 ```

@@ -1,0 +1,3 @@
+module.exports = {
+  jwtSecret: "INSERT_JWTSECRET_HERE"
+}

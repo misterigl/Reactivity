@@ -33,6 +33,12 @@ app.get('*', function (req, res) {
 // });
 require('./lib/auth.js')(passport);
 
+app.get('/api/autTest', passport.authenticate('jwt', { session: false}),
+  function(req, res) {
+      res.send('Hey there authenticated user');
+  }
+);
+
 server.listen(3000, function () {
   console.log(colors.green('\nReactivity app listening on port 3000!'));
 });

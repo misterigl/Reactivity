@@ -8,10 +8,10 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    socket.on('news', function (data) {
-      console.log(data);
-      socket.emit('my other event', { my: 'data' });
-    });
+    // socket.on('news', function (data) {
+    //   console.log(data);
+    //   socket.emit('my other event', { my: 'data' });
+    // });
   }
 
   render() {

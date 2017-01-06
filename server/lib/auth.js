@@ -1,36 +1,59 @@
-var JwtStrategy = require('passport-jwt').Strategy,
-    ExtractJwt = require('passport-jwt').ExtractJwt;
+var passport = require("passport");
+var passportJWT = require("passport-jwt");
+var ExtractJwt = passportJWT.ExtractJwt;
+var Strategy = passportJWT.Strategy;
 // var db = require...
 // var Promise = require('bluebird');
 // var bcrypt = require('bcryptjs');
 // bcrypt.compare = Promise.promisify(bcrypt.compare);
-var opts = {
-  jwtFromRequest: ExtractJwt.fromAuthHeader(),
-  secretOrKey: 'secret'
-}
+var jwtSecret = require('./localvars.js').jwtSecret;
 
-var testuser = {
-  id: 1,
-  name: 'tester',
-  password: 'test123',
-  email: 'test@test.com'
+
+//using an array if users before hooking up DB
+var users = [{
+    id: 1,
+    name: "John",
+    email: "john@mail.com",
+    password: "john123"
+}, {
+    id: 2,
+    name: "Sarah",
+    email: "sarah@mail.com",
+    password: "sarah123"
+}];
+
+// passport-jwt config
+var cfg = {
+    jwtSecret: jwtSecret,
+    jwtSession: {
+        session: false
+      }
 };
-//tutorial at https://blog.jscrambler.com/implementing-jwt-using-passport/
-module.exports = function(passport) {
-  // passport.serializeUser(function(user, done) {
-  //   done(null, user.id);
-  // });
-  //
-  // passport.deserializeUser(function(id, done) {
-  //   db.User.find({where: {id: id}}).then(function(user) {
-  //     done(null, user);
-  //   }).error(function(err) {
-  //     done(err, null);
-  //   });
-  // });
 
-// dummy user + password checking, always allowing access
-  passport.use(new JwtStrategy(opts, function(payload, done) {
-    done(null, testuser);
-  }));
+var params = {
+    secretOrKey: cfg.jwtSecret,
+    jwtFromRequest: ExtractJwt.fromAuthHeader()
+};
+
+//tutorial at https://blog.jscrambler.com/implementing-jwt-using-passport/
+module.exports = function() {
+    var strategy = new Strategy(params, function(payload, done) {
+        var user = users[payload.id] || null;
+        if (user) {
+            return done(null, {
+                id: user.id
+            });
+        } else {
+            return done(new Error("User not found"), null);
+        }
+    });
+    passport.use(strategy);
+    return {
+        initialize: function() {
+            return passport.initialize();
+        },
+        authenticate: function() {
+            return passport.authenticate("jwt", cfg.jwtSession);
+        }
+    };
 };

@@ -12,7 +12,7 @@ Sport.relationMappings = {
     modelClass: __dirname + '/Activity',
     join: {
       from: 'sports.id',
-      to: 'activities.id'
+      to: 'activities.sportId'
     }
   },
   interestedUsers: {

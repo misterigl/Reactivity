@@ -16,6 +16,7 @@ exports.up = function(knex, Promise) {
       table.string('streetAddress1');
       table.string('streetAddress2');
       table.string('city');
+      table.string('state');
       table.string('postalCode');
       table.specificType('geom', 'geometry(point, 4326)');
     }),

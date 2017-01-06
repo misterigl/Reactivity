@@ -24,7 +24,7 @@ Activity.relationMappings = {
     relation: Model.BelongsToOneRelation,
     modelClass: __dirname + '/Sport',
     join: {
-      from: 'activities.id',
+      from: 'activities.sportId',
       to: 'sports.id'
     }
   },
@@ -32,7 +32,7 @@ Activity.relationMappings = {
     relation: Model.BelongsToOneRelation,
     modelClass: __dirname + '/Location',
     join: {
-      from: 'activities.id',
+      from: 'activities.locationId',
       to: 'locations.id'
     }
   }

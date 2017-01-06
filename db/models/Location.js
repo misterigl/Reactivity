@@ -12,7 +12,7 @@ Location.relationMappings = {
     modelClass: __dirname + '/Activity',
     join: {
       from: 'locations.id',
-      to: 'activities.id'
+      to: 'activities.locationId'
     }
   }
 };

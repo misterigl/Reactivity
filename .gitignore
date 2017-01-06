@@ -10,4 +10,5 @@ client/compiled/
 # Mac DS Store #
 .DS_Store
 
+# DB files #
 knexfile.js

@@ -10,4 +10,9 @@ apiRouter.route('/test')
     res.send('Hey there HR 50');
   });
 
+// apiRouter.route('/authTest', passport.authenticate('jwt', { session: false}))
+//   .get(function(req, res) {
+//     res.send('Hey there authenticated user');
+//   });
+
 module.exports = apiRouter;

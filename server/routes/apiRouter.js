@@ -36,6 +36,21 @@ apiRouter.get('/activities/nearby/:lat/:long/:n?', function(req, res) {
     });
 });
 
+apiRouter.get('/profile/:username', function(req, res) {
+  dbMethods.getProfileByUsername(req.params.username)
+    .then(function(user) {
+      if (!user) {
+        res.status(404).send('User not found');
+      } else {
+        res.json(user);
+      }
+    })
+    .catch(function(err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    });
+});
+
 apiRouter.route('/test')
   .get(function(req, res) {
     res.send('Hey there HR 50');

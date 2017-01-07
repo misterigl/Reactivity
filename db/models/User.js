@@ -71,6 +71,18 @@ User.relationMappings = {
       },
       to: 'sports.id'
     }
+  },
+  friendsUniDir: {
+    relation: Model.ManyToManyRelation,
+    modelClass: User,
+    join: {
+      from: 'users.id',
+      through: {
+        from: 'friendships.userId',
+        to: 'friendships.friendId'
+      },
+      to: 'users.id'
+    }
   }
 };
 

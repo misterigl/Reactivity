@@ -8,7 +8,7 @@ var colors = require('colors/safe');
 // var passport = require('passport');
 var bodyParser = require('body-parser');
 
-var auth = require("./lib/auth.js")();
+var auth = require('./lib/auth.js');
 var apiRouter = require('./routes/apiRouter');
 var authRouter = require('./routes/authRouter');
 require('./io.js')(io);
@@ -16,8 +16,8 @@ require('./io.js')(io);
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
-app.use(auth.initialize());
 
+app.use(auth.initialize());
 app.use('/auth', authRouter);
 app.use('/api', auth.authenticate(), apiRouter);
 

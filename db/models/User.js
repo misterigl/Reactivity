@@ -1,8 +1,35 @@
 var Model = require('../lib/objection.js');
+var Promise = require('bluebird');
+var bcrypt = require('bcryptjs');
+bcrypt.hash = Promise.promisify(bcrypt.hash);
+
 
 class User extends Model {
   static get tableName() {
     return 'users';
+  }
+
+  $beforeInsert(options, context) {
+    return bcrypt.hash(this.password, 10)
+    .bind(this)
+    .then(function(hash) {
+      this.password = hash;
+      return;
+    })
+    .catch(function(err) {
+      console.error('Error hashing password:', err);
+    });
+  }
+  $beforeUpdate(options, context) {
+    return bcrypt.hash(this.password, 10)
+    .bind(this)
+    .then(function(hash) {
+      this.password = hash;
+      return;
+    })
+    .catch(function(err) {
+      console.error('Error hashing password:', err);
+    });
   }
 }
 

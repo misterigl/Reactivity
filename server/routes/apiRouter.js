@@ -6,6 +6,21 @@ apiRouter.route('/activities')
     res.send('Request for activities');
   });
 
+apiRouter.get('/activities/:id', function(req, res) {
+  dbMethods.getActivityById(req.params.id)
+    .then(function(activity) {
+      if (!activity) {
+        res.status(404).send('Activity not found');
+      } else {
+        res.json(activity);
+      }
+    })
+    .catch(function(err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    });
+});
+
 apiRouter.get('/activities/nearby/:lat/:long/:n?', function(req, res) {
   var lat = req.params.lat;
   var long = req.params.long;
@@ -25,6 +40,10 @@ apiRouter.route('/test')
   .get(function(req, res) {
     res.send('Hey there HR 50');
   });
+
+apiRouter.get('/nateTest', function(req, res) {
+  res.end();
+});
 
 // apiRouter.route('/authTest', passport.authenticate('jwt', { session: false}))
 //   .get(function(req, res) {

@@ -14,7 +14,6 @@ exports.activitiesNearby = function(lat, long, n) {
     .eager('[location, sport]')
     .orderBy('location.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
     .limit(n)
-    .debug()
     .then(function(results) {
       return results;
     });

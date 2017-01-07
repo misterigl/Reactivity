@@ -4,10 +4,12 @@ node_modules
 ## Compiled Files ##
 client/compiled/
 
-# Log files ##
+# Log and local files ##
 *.log
+localvars.js
 
 # Mac DS Store #
 .DS_Store
 
+# DB files #
 knexfile.js

@@ -2,6 +2,7 @@ var knex = require('./lib/db.js');
 var st = knex.postgis;
 
 var Activity = require('./models/Activity.js');
+var User = require('./models/User.js');
 
 
 exports.activitiesNearby = function(lat, long, n) {
@@ -24,6 +25,17 @@ exports.getActivityById = function(id) {
     .query()
     .where('id', id)
     .eager('[location, sport]')
+    .then(function(resultArr) {
+      return resultArr[0];
+    });
+};
+
+exports.getProfileByUsername = function(username) {
+  return User
+    .query()
+    .where('username', username)
+    .eager('[interests]')
+    .omit(User, ['password', 'email', 'lastLocation'])
     .then(function(resultArr) {
       return resultArr[0];
     });

@@ -8,20 +8,6 @@ var Strategy = passportJWT.Strategy;
 // bcrypt.compare = Promise.promisify(bcrypt.compare);
 var jwtSecret = require('./localvars.js').jwtSecret;
 
-
-//using an array if users before hooking up DB
-var users = [{
-    id: 1,
-    name: "John",
-    email: "john@mail.com",
-    password: "john123"
-}, {
-    id: 2,
-    name: "Sarah",
-    email: "sarah@mail.com",
-    password: "sarah123"
-}];
-
 // passport-jwt config
 var cfg = {
     jwtSecret: jwtSecret,
@@ -35,7 +21,6 @@ var params = {
     jwtFromRequest: ExtractJwt.fromAuthHeader()
 };
 
-//tutorial at https://blog.jscrambler.com/implementing-jwt-using-passport/
 module.exports = function() {
     var strategy = new Strategy(params, function(payload, done) {
         var user = users[payload.id] || null;

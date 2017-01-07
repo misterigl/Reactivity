@@ -3,6 +3,7 @@ var passportJWT = require('passport-jwt');
 var ExtractJwt = passportJWT.ExtractJwt;
 var Strategy = passportJWT.Strategy;
 var jwtSecret = require('./localvars.js').jwtSecret;
+var User = require('../../db/models/User');
 
 // passport-jwt config
 var cfg = {
@@ -16,14 +17,18 @@ var params = {
 };
 
 var strategy = new Strategy(params, function(payload, done) {
-  var user = users[payload.id] || null;
-  if (user) {
-    return done(null, {
-      id: user.id
+  User.query().where('id', payload.id)
+    .then(function(user) {
+      var user = user[0];
+      if (!user) {
+        done(null, false);
+      } else {
+        done(null, user);
+      }
+    })
+    .catch(function(err) {
+      done(err, false);
     });
-  } else {
-    return done(new Error('User not found'), null);
-  }
 });
 
 passport.use(strategy);

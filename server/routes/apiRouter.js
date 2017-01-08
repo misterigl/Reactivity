@@ -51,6 +51,17 @@ apiRouter.get('/profile/:username', function(req, res) {
     });
 });
 
+apiRouter.get('/friends/:id', function(req, res) {
+  dbMethods.getUserFriendsById(req.params.id)
+    .then(function(friends) {
+      res.json(friends);
+    })
+    .catch(function(err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    });
+});
+
 apiRouter.route('/test')
   .get(function(req, res) {
     res.send('Hey there HR 50');

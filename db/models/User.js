@@ -83,6 +83,18 @@ User.relationMappings = {
       },
       to: 'users.id'
     }
+  },
+  friends: {
+    relation: Model.ManyToManyRelation,
+    modelClass: User,
+    join: {
+      from: 'users.id',
+      through: {
+        from: 'friends.userId',
+        to: 'friends.friendId'
+      },
+      to: 'users.id'
+    }
   }
 };
 

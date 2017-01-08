@@ -13,3 +13,6 @@ localvars.js
 
 # DB files #
 knexfile.js
+
+# Local test #
+test.js

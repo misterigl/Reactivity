@@ -35,9 +35,25 @@ exports.getProfileByUsername = function(username) {
     .query()
     .where('username', username)
     .eager('[interests]')
+    // .modifyEager('interests', function(builder) {
+    //   builder.pick(['sport']);
+    // })
     .omit(User, ['password', 'email', 'lastLocation'])
     .then(function(resultArr) {
       return resultArr[0];
     });
 };
+
+exports.getUserFriendsById = function(id) {
+  return User
+    .query()
+    .where('id', id)
+    .eager('friends')
+    .then(function(friends) {
+      return friends;
+    });
+};
+
+
+
 

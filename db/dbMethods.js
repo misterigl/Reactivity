@@ -44,13 +44,15 @@ exports.getProfileByUsername = function(username) {
     });
 };
 
-exports.getUserFriendsById = function(id) {
+exports.getUserFriendsByIdOrUsername = function(idOrUsername) {
+  var queryField = isNaN(Number(idOrUsername)) ? 'username' : 'id';
   return User
     .query()
-    .where('id', id)
+    .where(queryField, idOrUsername)
     .eager('friends')
-    .then(function(friends) {
-      return friends;
+    .first()
+    .then(function(user) {
+      return user.friends;
     });
 };
 

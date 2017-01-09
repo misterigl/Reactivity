@@ -51,8 +51,8 @@ apiRouter.get('/profile/:username', function(req, res) {
     });
 });
 
-apiRouter.get('/friends/:id', function(req, res) {
-  dbMethods.getUserFriendsById(req.params.id)
+apiRouter.get('/friends/:idOrUsername', function(req, res) {
+  dbMethods.getUserFriendsByIdOrUsername(req.params.idOrUsername)
     .then(function(friends) {
       res.json(friends);
     })

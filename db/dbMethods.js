@@ -24,7 +24,7 @@ exports.getActivityById = function(id) {
   return Activity
     .query()
     .where('id', id)
-    .eager('[location, sport]')
+    .eager('[locDetailsView, sport, creator]')
     .then(function(resultArr) {
       return resultArr[0];
     });
@@ -35,9 +35,6 @@ exports.getProfileByUsername = function(username) {
     .query()
     .where('username', username)
     .eager('[interests]')
-    // .modifyEager('interests', function(builder) {
-    //   builder.pick(['sport']);
-    // })
     .omit(User, ['password', 'email', 'lastLocation'])
     .then(function(resultArr) {
       return resultArr[0];

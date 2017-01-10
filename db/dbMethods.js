@@ -22,6 +22,40 @@ exports.activitiesNearby = function(lat, long, n) {
     });
 };
 
+exports.getUserActivities = function(userId, n) {
+  return User
+    .query()
+    .where('id', userId)
+    .eager('activities.[locDetailsView, sport, creator]')
+    .modifyEager('activities', function(builder) {
+      builder.orderBy('startTime');
+      builder.limit(n);
+    })
+    .omit(Activity, ['creatorId', 'locationId', 'sportId'])
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
+    .first()
+    .then(function(user) {
+      return user.activities;
+    });
+};
+
+exports.getUsersFriendsActivities = function(userId, n) {
+  return User
+    .query()
+    .where('id', userId)
+    .eager('friends.activities.[locDetailsView, sport, creator]')
+    // .modifyEager('friends.activities', function(builder) {
+    //   builder.orderBy('startTime');
+    //   builder.limit(n);
+    // })
+    .omit(Activity, ['creatorId', 'locationId', 'sportId'])
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
+    .first()
+    .then(function(user) {
+      return user;
+    });
+};
+
 exports.getActivityById = function(id) {
   return Activity
     .query()
@@ -58,6 +92,8 @@ exports.getUserFriendsByIdOrUsername = function(idOrUsername) {
       return user.friends;
     });
 };
+
+
 
 
 

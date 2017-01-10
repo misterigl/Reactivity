@@ -24,7 +24,7 @@ var createRandomActivity = function(minUserId, maxUserId, sportIds, cb) {
   var randomSportId = sportIds[ Math.floor(Math.random() * sportIds.length) ];
   var startTime = faker.date.between(fourDaysAgo, thirtyDaysFuture);
   var userIds = _.range(minUserId, maxUserId);
-  var attendeeIds = _.sample(userIds, faker.random.number({min: 1, max: 30}));
+  var attendeeIds = _.sample(userIds, faker.random.number({min: 1, max: 15}));
   var creatorId = faker.random.number({min: minUserId, max: maxUserId});
   Activity.query()
     .insertWithRelated({
@@ -177,11 +177,11 @@ exports.seed = function(knex, Promise) {
     ]);
   })
 
-  // Insert 5000 activities from 4 days ago to 30 days from now
+  // Insert 4000 activities from 4 days ago to 30 days from now
   .spread(function(minUserId, maxUserId, sportIds) {
     console.log('Generating 5000 activities...');
     return new Promise(function(resolve, reject) {
-      async.times(5000, function(n, next) {
+      async.times(4000, function(n, next) {
         createRandomActivity(minUserId, maxUserId, sportIds, function(err, result) {
           next(err, result);
         });

@@ -12,8 +12,10 @@ exports.activitiesNearby = function(lat, long, n) {
     .query()
     // Doing JoinEagerAlgorithm instead of WhereInEagerAlgorithm
     .eagerAlgorithm(Activity.JoinEagerAlgorithm)
-    .eager('[location, sport]')
-    .orderBy('location.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
+    .eager('[locDetailsView, sport, creator]')
+    .orderBy('locDetailsView.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
+    .omit(Activity, ['creatorId', 'locationId', 'sportId'])
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
     .limit(n)
     .then(function(results) {
       return results;
@@ -24,9 +26,12 @@ exports.getActivityById = function(id) {
   return Activity
     .query()
     .where('id', id)
-    .eager('[locDetailsView, sport, creator]')
-    .then(function(resultArr) {
-      return resultArr[0];
+    .eager('[locDetailsView, sport, creator, users]')
+    .omit(Activity, ['creatorId', 'locationId', 'sportId'])
+    .pick(User, ['id', 'username', 'firstName', 'lastName', 'profileUrl', 'status', 'lastActive'])
+    .first()
+    .then(function(activity) {
+      return activity;
     });
 };
 
@@ -47,6 +52,7 @@ exports.getUserFriendsByIdOrUsername = function(idOrUsername) {
     .query()
     .where(queryField, idOrUsername)
     .eager('friends')
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
     .first()
     .then(function(user) {
       return user.friends;

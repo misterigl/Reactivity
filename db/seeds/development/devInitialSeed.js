@@ -20,15 +20,21 @@ var randomSFLong = function() {
   return ((Math.random() * 1.300501) + -122.826977).toString();
 };
 
-var createRandomActivity = function(sportIds, cb) {
-  // var randomLat = ((Math.random() * 0.861642) + 37.269015).toString();
-  // var randomLong = ((Math.random() * 1.300501) + -122.826977).toString();
+var createRandomActivity = function(minUserId, maxUserId, sportIds, cb) {
   var randomSportId = sportIds[ Math.floor(Math.random() * sportIds.length) ];
+  var startTime = faker.date.between(fourDaysAgo, thirtyDaysFuture);
+  var userIds = _.range(minUserId, maxUserId);
+  var attendeeIds = _.sample(userIds, faker.random.number({min: 1, max: 30}));
+  var creatorId = faker.random.number({min: minUserId, max: maxUserId});
   Activity.query()
     .insertWithRelated({
       title: faker.company.catchPhrase(),
       sportId: randomSportId,
-      scheduledTime: faker.date.between(fourDaysAgo, thirtyDaysFuture),
+      startTime: startTime,
+      endTime: moment(startTime).add(faker.random.number({min: 1, max: 6}) * 30, 'minutes'),
+      description: faker.lorem.paragraph(),
+      creatorId: creatorId,
+      photoUrl: faker.image.sports(),
       location: [{
         name: faker.company.companyName(),
         streetAddress1: faker.fake('{{address.streetAddress}} {{address.streetName}}'),
@@ -36,7 +42,8 @@ var createRandomActivity = function(sportIds, cb) {
         state: 'California',
         postalCode: faker.address.zipCode('#####'),
         geom: st.geomFromText('Point(' + randomSFLat() + ' ' + randomSFLong() + ')', 4326)
-      }]
+      }],
+      users: attendeeIds.map(function(id) { return { '#dbRef': id, status: 'confirmed' }; }).concat([{ '#dbRef': creatorId, status: 'admin' }])
     })
     .then(function(result) {
       cb(null, result);
@@ -162,33 +169,35 @@ exports.seed = function(knex, Promise) {
     });
   })
 
-  // Insert 5000 activities from 4 days ago to 30 days from now
   .then(function(sportIds) {
+    return Promise.all([
+      User.query().min('id').then(function(result) { return result[0].min; }),
+      User.query().max('id').then(function(result) { return result[0].max; }),
+      sportIds
+    ]);
+  })
+
+  // Insert 5000 activities from 4 days ago to 30 days from now
+  .spread(function(minUserId, maxUserId, sportIds) {
     console.log('Generating 5000 activities...');
     return new Promise(function(resolve, reject) {
       async.times(5000, function(n, next) {
-        createRandomActivity(sportIds, function(err, result) {
+        createRandomActivity(minUserId, maxUserId, sportIds, function(err, result) {
           next(err, result);
         });
       }, function(err, results) {
         if (err) {
           reject(err);
         } else {
-          resolve();
+          resolve([minUserId, maxUserId]);
         }
       });
     });
   })
 
   // Make each user send 75 random friend requests (mutual requests make friends)
-  .then(function() {
-    console.log('Making friend connections between users...');
-    return Promise.all([
-      User.query().min('id').then(function(result) { return result[0].min; }),
-      User.query().max('id').then(function(result) { return result[0].max; })
-    ]);
-  })
   .spread(function(minId, maxId) {
+    console.log('Making friend connections between users...');
     var userIds = [];
     for (var i = minId; i <= maxId; i++) {
       userIds.push(i);

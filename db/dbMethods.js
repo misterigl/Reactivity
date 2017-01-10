@@ -12,11 +12,47 @@ exports.activitiesNearby = function(lat, long, n) {
     .query()
     // Doing JoinEagerAlgorithm instead of WhereInEagerAlgorithm
     .eagerAlgorithm(Activity.JoinEagerAlgorithm)
-    .eager('[location, sport]')
-    .orderBy('location.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
+    .eager('[locDetailsView, sport, creator]')
+    .orderBy('locDetailsView.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
+    .omit(Activity, ['creatorId', 'locationId', 'sportId'])
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
     .limit(n)
     .then(function(results) {
       return results;
+    });
+};
+
+exports.getUserActivities = function(userId, n) {
+  return User
+    .query()
+    .where('id', userId)
+    .eager('activities.[locDetailsView, sport, creator]')
+    .modifyEager('activities', function(builder) {
+      builder.orderBy('startTime');
+      builder.limit(n);
+    })
+    .omit(Activity, ['creatorId', 'locationId', 'sportId'])
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
+    .first()
+    .then(function(user) {
+      return user.activities;
+    });
+};
+
+exports.getUsersFriendsActivities = function(userId, n) {
+  return User
+    .query()
+    .where('id', userId)
+    .eager('friends.activities.[locDetailsView, sport, creator]')
+    // .modifyEager('friends.activities', function(builder) {
+    //   builder.orderBy('startTime');
+    //   builder.limit(n);
+    // })
+    .omit(Activity, ['creatorId', 'locationId', 'sportId'])
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
+    .first()
+    .then(function(user) {
+      return user;
     });
 };
 
@@ -24,9 +60,12 @@ exports.getActivityById = function(id) {
   return Activity
     .query()
     .where('id', id)
-    .eager('[location, sport]')
-    .then(function(resultArr) {
-      return resultArr[0];
+    .eager('[locDetailsView, sport, creator, users]')
+    .omit(Activity, ['creatorId', 'locationId', 'sportId'])
+    .pick(User, ['id', 'username', 'firstName', 'lastName', 'profileUrl', 'status', 'lastActive'])
+    .first()
+    .then(function(activity) {
+      return activity;
     });
 };
 
@@ -35,9 +74,6 @@ exports.getProfileByUsername = function(username) {
     .query()
     .where('username', username)
     .eager('[interests]')
-    // .modifyEager('interests', function(builder) {
-    //   builder.pick(['sport']);
-    // })
     .omit(User, ['password', 'email', 'lastLocation'])
     .then(function(resultArr) {
       return resultArr[0];
@@ -50,11 +86,14 @@ exports.getUserFriendsByIdOrUsername = function(idOrUsername) {
     .query()
     .where(queryField, idOrUsername)
     .eager('friends')
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
     .first()
     .then(function(user) {
       return user.friends;
     });
 };
+
+
 
 
 

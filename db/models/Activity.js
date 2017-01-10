@@ -20,6 +20,14 @@ Activity.relationMappings = {
       to: 'users.id'
     }
   },
+  creator: {
+    relation: Model.BelongsToOneRelation,
+    modelClass: __dirname + '/User',
+    join: {
+      from: 'activities.creatorId',
+      to: 'users.id'
+    }
+  },
   sport: {
     relation: Model.BelongsToOneRelation,
     modelClass: __dirname + '/Sport',
@@ -34,6 +42,14 @@ Activity.relationMappings = {
     join: {
       from: 'activities.locationId',
       to: 'locations.id'
+    }
+  },
+  locDetailsView: {
+    relation: Model.BelongsToOneRelation,
+    modelClass: __dirname + '/LocDetailsView',
+    join: {
+      from: 'activities.locationId',
+      to: 'loc_details_view.id'
     }
   }
 };

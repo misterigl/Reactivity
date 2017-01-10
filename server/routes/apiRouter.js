@@ -1,11 +1,6 @@
 var apiRouter = require('express').Router();
 var dbMethods = require('../../db/dbMethods');
 
-apiRouter.route('/activities')
-  .get(function(req, res) {
-    res.send('Request for activities');
-  });
-
 apiRouter.get('/activities/:id', function(req, res) {
   dbMethods.getActivityById(req.params.id)
     .then(function(activity) {
@@ -21,10 +16,36 @@ apiRouter.get('/activities/:id', function(req, res) {
     });
 });
 
+apiRouter.get('/activities/mine/:n?', function(req, res) {
+  var n = req.params.n || 25;
+  dbMethods.getUserActivities(req.user.id, n)
+    .then(function(activities) {
+      console.log('numActivities', activities.length);
+      res.json(activities);
+    })
+    .catch(function(err) {
+      console.error('Get my activities error:', err);
+      res.status(500).send(err);
+    });
+});
+
+apiRouter.get('/activities/myfriends/:n?', function(req, res) {
+  var n = req.params.n || 25;
+  dbMethods.getUsersFriendsActivities(req.user.id, n)
+    .then(function(activities) {
+      console.log('numActivities', activities.length);
+      res.json(activities);
+    })
+    .catch(function(err) {
+      console.error('Get my activities error:', err);
+      res.status(500).send(err);
+    });
+});
+
 apiRouter.get('/activities/nearby/:lat/:long/:n?', function(req, res) {
   var lat = req.params.lat;
   var long = req.params.long;
-  var n = req.params.n || 10;
+  var n = req.params.n || 25;
 
   dbMethods.activitiesNearby(lat, long, n)
     .then(function(results) {

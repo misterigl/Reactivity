@@ -30,7 +30,7 @@ authRouter.post('/login', function(req, res) {
       if (!authenticated) {
         throw 'Invalid password';
       } else {
-        var payload = { id: user.id };
+        var payload = { id: user.id, exp: Math.round((Date.now() + 30 * 24 * 60 * 1000) / 1000) };
         var token = jwt.encode(payload, auth.cfg.jwtSecret);
         res.json({ token: token });
       }

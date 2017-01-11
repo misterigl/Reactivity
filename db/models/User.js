@@ -95,6 +95,18 @@ User.relationMappings = {
       },
       to: 'users.id'
     }
+  },
+  friendRequests: {
+    relation: Model.ManyToManyRelation,
+    modelClass: User,
+    join: {
+      from: 'users.id',
+      through: {
+        from: 'friend_requests.userId',
+        to: 'friend_requests.requestedUserId'
+      },
+      to: 'users.id'
+    }
   }
 };
 

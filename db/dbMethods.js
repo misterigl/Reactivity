@@ -15,6 +15,7 @@ exports.activitiesNearby = function(lat, long, n) {
     // Doing JoinEagerAlgorithm instead of WhereInEagerAlgorithm
     .eagerAlgorithm(Activity.JoinEagerAlgorithm)
     .eager('[locDetailsView, sport, creator]')
+    // NEED TO FIX THIS ORDER BY PART
     .orderBy('locDetailsView.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
     .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
@@ -144,6 +145,10 @@ exports.getProfileByIdOrUsername = function(idOrUsername) {
     });
 };
 
+//************************************************
+//                   FRIENDS
+//************************************************
+
 exports.getUserFriendsByIdOrUsername = function(idOrUsername) {
   var queryField = isNaN(Number(idOrUsername)) ? 'username' : 'id';
   return User
@@ -157,11 +162,26 @@ exports.getUserFriendsByIdOrUsername = function(idOrUsername) {
     });
 };
 
+exports.getFriendRequests = function(req, res) {
+  User
+    .query()
+    .where('id', req.user.id)
+    .eager('friendRequests')
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
+    .first()
+    .then(function(user) {
+      res.json(user.friendRequests);
+    })
+    .catch(function(err) {
+      console.error('Get friend requests error: ', err);
+    });
+};
 
 
-//------------------------------------------------
-//                  SPORTS
-//------------------------------------------------
+
+//************************************************
+//                   SPORTS
+//************************************************
 
 exports.getSports = function(req, res) {
   Sport

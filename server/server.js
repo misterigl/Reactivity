@@ -14,6 +14,7 @@ var authRouter = require('./routes/authRouter');
 require('./io.js')(io);
 
 app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 

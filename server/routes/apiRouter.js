@@ -16,11 +16,12 @@ apiRouter.get('/activities/:id', function(req, res) {
     });
 });
 
-apiRouter.get('/activities/mine/:n?', function(req, res) {
-  var n = req.params.n || 25;
+apiRouter.post('/activities', dbMethods.postActivity);
+
+apiRouter.get('/activities/mine/:n', function(req, res) {
+  var n = req.params.n;
   dbMethods.getUserActivities(req.user.id, n)
     .then(function(activities) {
-      console.log('numActivities', activities.length);
       res.json(activities);
     })
     .catch(function(err) {
@@ -29,11 +30,10 @@ apiRouter.get('/activities/mine/:n?', function(req, res) {
     });
 });
 
-apiRouter.get('/activities/myfriends/:n?', function(req, res) {
-  var n = req.params.n || 25;
+apiRouter.get('/activities/myfriends/:n', function(req, res) {
+  var n = req.params.n;
   dbMethods.getUsersFriendsActivities(req.user.id, n)
     .then(function(activities) {
-      console.log('numActivities', activities.length);
       res.json(activities);
     })
     .catch(function(err) {
@@ -57,8 +57,8 @@ apiRouter.get('/activities/nearby/:lat/:long/:n?', function(req, res) {
     });
 });
 
-apiRouter.get('/profile/:username', function(req, res) {
-  dbMethods.getProfileByUsername(req.params.username)
+apiRouter.get('/profile/:idOrUsername', function(req, res) {
+  dbMethods.getProfileByIdOrUsername(req.params.idOrUsername)
     .then(function(user) {
       if (!user) {
         res.status(404).send('User not found');
@@ -82,6 +82,28 @@ apiRouter.get('/friends/:idOrUsername', function(req, res) {
       res.status(500).send('Server error');
     });
 });
+
+
+
+
+
+apiRouter.get('/sports', dbMethods.getSports);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 apiRouter.route('/test')
   .get(function(req, res) {

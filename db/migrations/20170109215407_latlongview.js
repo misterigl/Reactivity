@@ -4,8 +4,8 @@ exports.up = function(knex, Promise) {
     knex.raw(`
       CREATE VIEW loc_details_view AS (
         SELECT  *,
-                ST_X(geom) as longitude,
-                ST_Y(geom) as latitude
+                ST_X(geom) as latitude,
+                ST_Y(geom) as longitude
         FROM locations
       )
     `),

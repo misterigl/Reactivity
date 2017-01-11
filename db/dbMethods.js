@@ -15,7 +15,7 @@ exports.activitiesNearby = function(lat, long, n) {
     // Doing JoinEagerAlgorithm instead of WhereInEagerAlgorithm
     .eagerAlgorithm(Activity.JoinEagerAlgorithm)
     .eager('[locDetailsView, sport, creator]')
-    .orderBy('locDetailsView.geom <-> ' + st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
+    .orderBy('locDetailsView.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
     .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
     .limit(n)
@@ -174,5 +174,3 @@ exports.getSports = function(req, res) {
       res.status(500).send('Server error');
     });
 };
-
-

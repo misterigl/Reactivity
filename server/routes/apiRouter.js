@@ -2,7 +2,7 @@ var apiRouter = require('express').Router();
 var dbMethods = require('../../db/dbMethods');
 
 apiRouter.get('/activities/:id', function(req, res) {
-  dbMethods.getActivityById(req.params.id)
+  dbMethods.getActivityById(req.params.id, req.user.id)
     .then(function(activity) {
       if (!activity) {
         res.status(404).send('Activity not found');

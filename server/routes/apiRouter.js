@@ -58,7 +58,7 @@ apiRouter.get('/activities/nearby/:lat/:long/:n?', function(req, res) {
 });
 
 apiRouter.get('/profile/:idOrUsername', function(req, res) {
-  dbMethods.getProfileByIdOrUsername(req.params.idOrUsername)
+  dbMethods.getProfileByIdOrUsername(req.params.idOrUsername, req.user.id)
     .then(function(user) {
       if (!user) {
         res.status(404).send('User not found');

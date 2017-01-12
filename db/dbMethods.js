@@ -214,6 +214,25 @@ exports.acceptFriendRequest = function(req, res) {
   });
 };
 
+exports.deleteFriendRequest = function(req, res) {
+  checkPendingFriendRequest(req.user.id, req.params.id)
+  .spread(function(exists, requestee) {
+    if (!exists) { throw 'Error: no pending friend request for that id'; }
+
+    return requestee.$relatedQuery('friendRequestsToAccept').unrelate().where('userId', req.params.id);
+  })
+  .then(function() {
+    res.send('Success');
+  })
+  .catch(function(err) {
+    res.status(403).send(err);
+  })
+  .error(function(err) {
+    console.error('Server error: ', err);
+    res.status(500).send('Server error');
+  });
+};
+
 
 
 //************************************************

@@ -96,14 +96,14 @@ User.relationMappings = {
       to: 'users.id'
     }
   },
-  friendRequests: {
+  friendRequestsToAccept: {
     relation: Model.ManyToManyRelation,
     modelClass: User,
     join: {
       from: 'users.id',
       through: {
-        from: 'friend_requests.userId',
-        to: 'friend_requests.requestedUserId'
+        from: 'friend_requests.requestedUserId',
+        to: 'friend_requests.userId'
       },
       to: 'users.id'
     }

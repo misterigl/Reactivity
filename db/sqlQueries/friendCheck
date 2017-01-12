@@ -1,0 +1,1 @@
+select * from friends where "userId" = 1530 ORDER BY "friendId"

@@ -214,6 +214,54 @@ exports.acceptFriendRequest = function(req, res) {
   });
 };
 
+exports.deleteFriendRequest = function(req, res) {
+  checkPendingFriendRequest(req.user.id, req.params.id)
+  .spread(function(exists, requestee) {
+    if (!exists) { throw 'Error: no pending friend request for that id'; }
+
+    return requestee.$relatedQuery('friendRequestsToAccept').unrelate().where('userId', req.params.id);
+  })
+  .then(function() {
+    res.send('Success');
+  })
+  .catch(function(err) {
+    res.status(403).send(err);
+  })
+  .error(function(err) {
+    console.error('Server error: ', err);
+    res.status(500).send('Server error');
+  });
+};
+
+exports.makeFriendRequest = function(req, res) {
+  User
+    .query()
+    .where('id', req.user.id)
+    .eager('friendsUniDir')
+    .modifyEager('friendsUniDir', function(builder) {
+      builder.where('friendId', req.params.id);
+    })
+    .first()
+    .then(function(user) {
+      if (user.friendsUniDir.length > 0) {
+        throw 'Error: friend request already pending or users are already friends';
+      }
+      return user.$relatedQuery('friendsUniDir').relate(req.params.id);
+    })
+    .then(function(result) {
+      console.log(result);
+      res.send('Success');
+    })
+    .catch(function(err) {
+      console.error('Error:', err);
+      res.status(400).send(err);
+    })
+    .error(function(err) {
+      console.error('Server error: ', err);
+      res.status(500).send('Server error');
+    });
+};
+
 
 
 //************************************************

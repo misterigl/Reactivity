@@ -78,7 +78,9 @@ apiRouter.get('/profile/:idOrUsername', function(req, res) {
 
 apiRouter.get('/friends/myrequests', dbMethods.getFriendRequests);
 apiRouter.put('/friends/accept/:id', dbMethods.acceptFriendRequest);
-apiRouter.delete('/friends/requests/:id', dbMethods.deleteFriendRequest);
+apiRouter.delete('/friends/myrequests/:id', dbMethods.deleteFriendRequest);
+
+apiRouter.put('/friends/makerequest/:id', dbMethods.makeFriendRequest);
 
 apiRouter.get('/friends/:idOrUsername', function(req, res) {
   dbMethods.getUserFriendsByIdOrUsername(req.params.idOrUsername)

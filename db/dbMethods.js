@@ -262,6 +262,10 @@ exports.makeFriendRequest = function(req, res) {
     });
 };
 
+exports.deleteFriend = function(req, res) {
+
+};
+
 
 
 //************************************************

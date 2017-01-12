@@ -114,15 +114,40 @@ exports.getUsersFriendsActivitiesPROBEXAMPLE = function(userId, n) {
     });
 };
 
-exports.getActivityById = function(id) {
+exports.getActivityById = function(id, loggedInUserId) {
   return Activity
     .query()
     .where('id', id)
-    .eager('[locDetailsView, sport, creator, users]')
+    .eager('[locDetailsView, sport, creator, users.[friendsUniDir, friends, friendRequestsToAccept]]')
+    .modifyEager('users.friends', function(builder) {
+      builder.where('friendId', loggedInUserId);
+    })
+    // If not friends, but friendsUniDir -> user profile being looked up has sent friend request to logged in user
+    .modifyEager('users.friendsUniDir', function(builder) {
+      builder.where('friendId', loggedInUserId);
+    })
+    .modifyEager('users.friendRequestsToAccept', function(builder) {
+      builder.where('userId', loggedInUserId);
+    })
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
-    .pick(User, ['id', 'username', 'firstName', 'lastName', 'profileUrl', 'status', 'lastActive'])
+    .pick(User, ['id', 'username', 'firstName', 'lastName', 'profileUrl', 'status', 'lastActive', 'friendsUniDir', 'friends', 'friendRequestsToAccept'])
     .first()
     .then(function(activity) {
+      activity.users = activity.users.map(function(user) {
+        if (user.friends.length > 0) {
+          user.relationship = 'friend';
+        } else if (user.friendsUniDir.length > 0) {
+          user.relationship = 'inboundFriendReqToAcceptOrDelete';
+        } else if (user.friendRequestsToAccept.length > 0) {
+          user.relationship = 'outboundFriendReqPending';
+        } else {
+          user.relationship = null;
+        }
+        delete user.friends;
+        delete user.friendRequestsToAccept;
+        delete user.friendsUniDir;
+        return user;
+      });
       return activity;
     });
 };

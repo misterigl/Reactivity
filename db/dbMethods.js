@@ -127,21 +127,44 @@ exports.getActivityById = function(id) {
     });
 };
 
-exports.getProfileByIdOrUsername = function(idOrUsername) {
+exports.getProfileByIdOrUsername = function(idOrUsername, loggedInUserId) {
   var queryField = isNaN(Number(idOrUsername)) ? 'username' : 'id';
   return User
     .query()
     .where(queryField, idOrUsername)
-    .eager('[interests, activities.[creator, sport]]')
+    .eager('[friendsUniDir, friends, friendRequestsToAccept, interests, activities.[creator, sport]]')
     .modifyEager('activities', function(builder) {
       builder.where('startTime', '>=', moment());
       builder.orderBy('startTime');
       builder.limit(10);
     })
+    .modifyEager('friends', function(builder) {
+      builder.where('friendId', loggedInUserId);
+    })
+    // If not friends, but friendsUniDir -> user profile being looked up has sent friend request to logged in user
+    .modifyEager('friendsUniDir', function(builder) {
+      builder.where('friendId', loggedInUserId);
+    })
+    .modifyEager('friendRequestsToAccept', function(builder) {
+      builder.where('userId', loggedInUserId);
+    })
     .omit(User, ['password', 'email', 'lastLocation'])
     .omit(Activity, ['sportId,', 'minParticipants', 'maxParticipants', 'locationId'])
-    .then(function(resultArr) {
-      return resultArr[0];
+    .first()
+    .then(function(user) {
+      if (user.friends.length > 0) {
+        user.relationship = 'friend';
+      } else if (user.friendsUniDir.length > 0) {
+        user.relationship = 'inboundFriendReqToAcceptOrDelete';
+      } else if (user.friendRequestsToAccept.length > 0) {
+        user.relationship = 'outboundFriendReqPending';
+      } else {
+        user.relationship = null;
+      }
+      delete user.friendsUniDir;
+      delete user.friendRequestsToAccept;
+      delete user.friends;
+      return user;
     });
 };
 
@@ -260,6 +283,10 @@ exports.makeFriendRequest = function(req, res) {
       console.error('Server error: ', err);
       res.status(500).send('Server error');
     });
+};
+
+exports.deleteFriend = function(req, res) {
+
 };
 
 

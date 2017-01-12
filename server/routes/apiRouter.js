@@ -58,7 +58,7 @@ apiRouter.get('/activities/nearby/:lat/:long/:n?', function(req, res) {
 });
 
 apiRouter.get('/profile/:idOrUsername', function(req, res) {
-  dbMethods.getProfileByIdOrUsername(req.params.idOrUsername)
+  dbMethods.getProfileByIdOrUsername(req.params.idOrUsername, req.user.id)
     .then(function(user) {
       if (!user) {
         res.status(404).send('User not found');
@@ -79,9 +79,8 @@ apiRouter.get('/profile/:idOrUsername', function(req, res) {
 apiRouter.get('/friends/myrequests', dbMethods.getFriendRequests);
 apiRouter.put('/friends/accept/:id', dbMethods.acceptFriendRequest);
 apiRouter.delete('/friends/myrequests/:id', dbMethods.deleteFriendRequest);
-
 apiRouter.put('/friends/makerequest/:id', dbMethods.makeFriendRequest);
-
+apiRouter.delete('/friends:id', dbMethods.deleteFriend);
 apiRouter.get('/friends/:idOrUsername', function(req, res) {
   dbMethods.getUserFriendsByIdOrUsername(req.params.idOrUsername)
     .then(function(friends) {

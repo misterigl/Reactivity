@@ -15,6 +15,7 @@ exports.activitiesNearby = function(lat, long, n) {
     // Doing JoinEagerAlgorithm instead of WhereInEagerAlgorithm
     .eagerAlgorithm(Activity.JoinEagerAlgorithm)
     .eager('[locDetailsView, sport, creator]')
+    // NEED TO FIX THIS ORDER BY PART
     .orderBy('locDetailsView.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
     .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
@@ -144,6 +145,10 @@ exports.getProfileByIdOrUsername = function(idOrUsername) {
     });
 };
 
+//************************************************
+//                   FRIENDS
+//************************************************
+
 exports.getUserFriendsByIdOrUsername = function(idOrUsername) {
   var queryField = isNaN(Number(idOrUsername)) ? 'username' : 'id';
   return User
@@ -157,11 +162,63 @@ exports.getUserFriendsByIdOrUsername = function(idOrUsername) {
     });
 };
 
+exports.getFriendRequests = function(req, res) {
+  User
+    .query()
+    .where('id', req.user.id)
+    .eager('friendRequestsToAccept')
+    .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
+    .first()
+    .then(function(user) {
+      res.json(user.friendRequestsToAccept);
+    })
+    .catch(function(err) {
+      console.error('Get friend requests error: ', err);
+    });
+};
+
+var checkPendingFriendRequest = function(requesteeId, requesterId) {
+  // Returns array of length 2:
+    // Index 0: true/false request exists
+    // Index 1: requestee objection user model instance
+  return User
+    .query()
+    .where('id', requesteeId)
+    .eager('friendRequestsToAccept')
+    .modifyEager('friendRequestsToAccept', function(builder) {
+      builder.where('id', requesterId);
+    })
+    .first()
+    .then(function(user) {
+      return [user.friendRequestsToAccept.length > 0, user];
+    });
+};
+
+exports.acceptFriendRequest = function(req, res) {
+  checkPendingFriendRequest(req.user.id, req.params.id)
+  .spread(function(exists, requestee) {
+    if (!exists) { throw 'Error: no pending friend request for that id'; }
+
+    return requestee.$relatedQuery('friendsUniDir').relate(req.params.id);
+  })
+  .then(function(requestee) {
+    console.log(requestee);
+    res.send('Success');
+  })
+  .catch(function(err) {
+    res.status(403).send(err);
+  })
+  .error(function(err) {
+    console.error('Server error: ', err);
+    res.status(500).send('Server error');
+  });
+};
 
 
-//------------------------------------------------
-//                  SPORTS
-//------------------------------------------------
+
+//************************************************
+//                   SPORTS
+//************************************************
 
 exports.getSports = function(req, res) {
   Sport

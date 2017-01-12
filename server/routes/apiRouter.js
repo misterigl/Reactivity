@@ -72,6 +72,13 @@ apiRouter.get('/profile/:idOrUsername', function(req, res) {
     });
 });
 
+//************************************************
+//                   FRIENDS
+//************************************************
+
+apiRouter.get('/friends/myrequests', dbMethods.getFriendRequests);
+apiRouter.put('/friends/accept/:id', dbMethods.acceptFriendRequest);
+
 apiRouter.get('/friends/:idOrUsername', function(req, res) {
   dbMethods.getUserFriendsByIdOrUsername(req.params.idOrUsername)
     .then(function(friends) {
@@ -82,6 +89,8 @@ apiRouter.get('/friends/:idOrUsername', function(req, res) {
       res.status(500).send('Server error');
     });
 });
+
+
 
 
 

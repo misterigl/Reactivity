@@ -107,6 +107,19 @@ User.relationMappings = {
       },
       to: 'users.id'
     }
+  },
+  friendsActivities: {
+    relation: Model.ManyToManyRelation,
+    modelClass: __dirname + '/Activity',
+    join: {
+      from: 'users.id',
+      through: {
+        from: 'friend_activities.userId',
+        to: 'friend_activities.activityId',
+        extra: ['numFriends']
+      },
+      to: 'activities.id'
+    }
   }
 };
 

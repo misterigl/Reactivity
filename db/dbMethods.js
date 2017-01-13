@@ -76,41 +76,20 @@ exports.postActivity = function(req, res) {
 };
 
 exports.getUsersFriendsActivities = function(userId, n) {
-  // NEED TO DO ORDER BY AND LIMIT AND COMBINE FRIENDS ACTIVITIES
   return User
     .query()
-    .eagerAlgorithm(Activity.JoinEagerAlgorithm)
-    .where('users.id', userId)
-    .eager('friends.activities.[locDetailsView, sport, creator]')
-    // .modifyEager('friends.activities', function(builder) {
-    //   builder.orderBy('startTime');
-    //   builder.limit(n);
-    // })
-    .pick(Activity, ['title', 'description', 'startTime', 'endTime', 'photoUrl', 'creator'])
-    .omit(User, ['password', 'email', 'lastActive', 'lastLocation', 'bioText'])
+    .where('id', userId)
+    .eager('friendsActivities.[creator]')
+    .modifyEager('friendsActivities', function(builder) {
+      builder.where('startTime', '>=', new Date());
+      builder.orderBy('startTime');
+      builder.limit(n);
+    })
+    .pick(User, ['id', 'username', 'firstName', 'lastName', 'profileUrl', 'friendsActivities'])
+    .omit(Activity, ['minParticipants', 'maxParticipants', 'locationId'])
     .first()
-    .debug()
     .then(function(user) {
-      return user;
-    });
-};
-
-exports.getUsersFriendsActivitiesPROBEXAMPLE = function(userId, n) {
-  return User
-    .query()
-    .eagerAlgorithm(Activity.JoinEagerAlgorithm)
-    .where('users.id', userId)
-    .eager('friends.activities.[locDetailsView, sport, creator]')
-    // .modifyEager('friends.activities', function(builder) {
-    //   builder.orderBy('startTime');
-    //   builder.limit(n);
-    // })
-    .pick(Activity, ['title', 'description', 'startTime', 'endTime', 'photoUrl', 'creator'])
-    .omit(User, ['password', 'email', 'lastActive', 'lastLocation', 'bioText'])
-    .first()
-    .debug()
-    .then(function(user) {
-      return user;
+      return user.friendsActivities;
     });
 };
 

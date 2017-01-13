@@ -296,7 +296,25 @@ exports.deleteFriend = function(req, res) {
 //************************************************
 
 exports.signupUser = function(req, res) {
-
+  User
+    .query()
+    .where('username', req.body.username)
+    .then(function(foundUser) {
+      if (!!foundUser.length) {
+        res.status(409).send('Conflict: Username already exists.');
+      } else {
+        User.query()
+          .insertWithRelated({
+            email: req.body.email,
+            username: req.body.username,
+            password: req.body.password,
+            interests: [{ '#dbRef': req.body.interests }],
+            interests: req.body.interest.map(function(interestId) {
+              return { '#dbRef': interestId };
+            })
+          });
+      }
+    });
 };
 
 

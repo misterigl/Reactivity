@@ -2,6 +2,7 @@ var authRouter = require('express').Router();
 var jwt = require('jwt-simple');
 var auth = require('../lib/auth');
 var User = require('../../db/models/User');
+var moment = require('moment');
 var Promise = require('bluebird');
 var bcrypt = require('bcryptjs');
 bcrypt.compare = Promise.promisify(bcrypt.compare);
@@ -32,9 +33,9 @@ authRouter.post('/login', function(req, res) {
       if (!authenticated) {
         throw 'Invalid password';
       } else {
-        var payload = { id: user.id, exp: Math.round((Date.now() + 30 * 24 * 60 * 1000) / 1000) };
+        var payload = { id: user.id, exp: moment().add(30, 'days').unix() };
         var token = jwt.encode(payload, auth.cfg.jwtSecret);
-        res.json({ token: token });
+        res.json({ token: token, userid: user.id, username: user.username });
       }
     })
     .catch(function(authError) {

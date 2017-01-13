@@ -12,15 +12,13 @@ exports.activitiesNearby = function(lat, long, n) {
   var long = long.toString();
   return Activity
     .query()
-    // Doing JoinEagerAlgorithm instead of WhereInEagerAlgorithm
+    .whereBetween('startTime', [moment(), moment().add(24, 'hours')])
     .eagerAlgorithm(Activity.JoinEagerAlgorithm)
     .eager('[locDetailsView, sport, creator]')
-    // NEED TO FIX THIS ORDER BY PART
-    .orderBy('locDetailsView.geom', '<->', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
+    .orderByRaw('"locDetailsView"."geom" <-> ' + st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
     .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
     .limit(n)
-    .debug()
     .then(function(results) {
       return results;
     });

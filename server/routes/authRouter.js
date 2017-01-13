@@ -5,6 +5,8 @@ var User = require('../../db/models/User');
 var Promise = require('bluebird');
 var bcrypt = require('bcryptjs');
 bcrypt.compare = Promise.promisify(bcrypt.compare);
+var dbMethods = require('../../db/dbMethods.js');
+
 
 
 authRouter.post('/login', function(req, res) {
@@ -43,5 +45,7 @@ authRouter.post('/login', function(req, res) {
       res.status(500).send('Server error');
     });
 });
+
+authRouter.post('/signup', dbMethods.signupUser);
 
 module.exports = authRouter;

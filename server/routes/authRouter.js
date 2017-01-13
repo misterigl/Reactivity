@@ -35,7 +35,7 @@ authRouter.post('/login', function(req, res) {
       } else {
         var payload = { id: user.id, exp: moment().add(30, 'days').unix() };
         var token = jwt.encode(payload, auth.cfg.jwtSecret);
-        res.json({ token: token, userid: user.id, username: user.username });
+        res.json({ token: token, userId: user.id, username: user.username });
       }
     })
     .catch(function(authError) {

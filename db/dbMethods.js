@@ -296,7 +296,40 @@ exports.deleteFriend = function(req, res) {
 //************************************************
 
 exports.signupUser = function(req, res) {
-
+  User.query()
+    .insertWithRelated({
+      email: req.body.email,
+      username: req.body.username,
+      password: req.body.password,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      bioText: req.body.bioText,
+      locations: [{
+        name: req.body.homeLocation.name,
+        streetAddress1: req.body.homeLocation.streetAddress1,
+        streetAddress2: req.body.homeLocation.streetAddress2,
+        city: req.body.homeLocation.city,
+        state: req.body.homeLocation.state,
+        postalCode: req.body.homeLocation.postalCode,
+        geom: st.geomFromText('Point(' + req.body.homeLocation.latitude + ' ' + req.body.homeLocation.longitude + ')', 4326),
+        locationName: 'home'
+      }],
+      interests: req.body.interests.map(function(interestId) {
+        return { '#dbRef': interestId };
+      })
+    })
+    .then(function(user) {
+      res.status(201).send('Success');
+    })
+    .catch(function(err) {
+      if (err.constraint === 'users_username_unique') {
+        res.status(409).send('This username is taken. Please try a different username.');
+      } else if (err.constraint === 'users_email_unique') {
+        res.status(409).send('An account with this email address already exists. Did you forget your password?');
+      } else {
+        res.status(500).send('Server error');
+      }
+    });
 };
 
 

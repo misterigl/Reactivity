@@ -311,7 +311,7 @@ exports.signupUser = function(req, res) {
         city: req.body.homeLocation.city,
         state: req.body.homeLocation.state,
         postalCode: req.body.homeLocation.postalCode,
-        // geom: st.geomFromText('Point(' + req.body.homeLocation.latitude + ' ' + req.body.homeLocation.longitude + ')', 4326),
+        geom: st.geomFromText('Point(' + req.body.homeLocation.latitude + ' ' + req.body.homeLocation.longitude + ')', 4326),
         locationName: 'home'
       }],
       interests: req.body.interests.map(function(interestId) {
@@ -327,7 +327,7 @@ exports.signupUser = function(req, res) {
       } else if (err.constraint === 'users_email_unique') {
         res.status(409).send('An account with this email address already exists. Did you forget your password?');
       } else {
-        res.status(400).send(err);
+        res.status(500).send('Server error');
       }
     });
 };

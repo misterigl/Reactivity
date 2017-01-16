@@ -1,10 +1,21 @@
-reactivity:
-  build: .
-  # command: node_modules/.bin/nodemon server/server.js
-  environment:
-    NODE_ENV: development
-  ports:
-    - '3000:3000'
-  volumes:
-    - .:/home/app/reactivity
-    - /home/app/reactivity/node_modules
+version: '2'
+services:
+  reactivity:
+    image: 'reactivity'
+    #build: .
+    # command: node_modules/.bin/nodemon server/server.js
+    environment:
+      NODE_ENV: development
+    ports:
+      - '3000:3000'
+    #volumes:
+      # - .:/home/app/reactivity
+      # - /home/app/reactivity/node_modules
+
+  nginx:
+    restart: always
+    image: 'nginx'
+    ports:
+      - '8000:80'
+    links:
+      - reactivity:app

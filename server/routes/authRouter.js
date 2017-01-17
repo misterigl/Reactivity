@@ -8,7 +8,16 @@ var bcrypt = require('bcryptjs');
 bcrypt.compare = Promise.promisify(bcrypt.compare);
 var dbMethods = require('../../db/dbMethods.js');
 
-
+authRouter.get('/test', function(req, res) {
+  User.query()
+    .then(function(users) {
+      res.json(users);
+    })
+    .catch(function(err) {
+      console.error(err);
+      res.json(err);
+    });
+});
 
 authRouter.post('/login', function(req, res) {
   var email = req.body.email;

@@ -16,3 +16,6 @@ COPY . /usr/src/app
 
 EXPOSE 3000
 CMD ["npm", "run", "express"]
+
+
+# NOTE: Copying app source after npm install so that npm install is not needlessly repeated unless package.json changes. Containers are executed in layers.

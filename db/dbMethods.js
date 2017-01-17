@@ -288,7 +288,17 @@ exports.makeFriendRequest = function(req, res) {
 };
 
 exports.deleteFriend = function(req, res) {
-
+  var friendId = req.params.id;
+  var userId = req.user.id;
+  User
+    .query()
+    .where('id', userId)
+    .first()
+    .then((user) => {
+      return user.$relatedQuery('friends').unrelate().where('friendId', friendId);
+    })
+    .then((found) => { res.send('Success'); })
+    .catch((err) => { res.status(500).send('Server error', err); });
 };
 
 //************************************************

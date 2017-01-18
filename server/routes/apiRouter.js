@@ -19,8 +19,9 @@ apiRouter.get('/activities/:id', function(req, res) {
 apiRouter.post('/activities', dbMethods.postActivity);
 
 apiRouter.get('/activities/mine/:n', function(req, res) {
+  var sportIdsArr = req.query.sportIds ? JSON.parse(req.query.sportIds) : null;
   var n = req.params.n;
-  dbMethods.getUserActivities(req.user.id, n)
+  dbMethods.getUserActivities(req.user.id, n, sportIdsArr)
     .then(function(activities) {
       res.json(activities);
     })

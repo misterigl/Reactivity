@@ -24,12 +24,15 @@ exports.activitiesNearby = function(lat, long, n) {
     });
 };
 
-exports.getUserActivities = function(userId, n) {
+exports.getUserActivities = function(userId, n, sportIdsArr) {
   return User
     .query()
     .where('id', userId)
     .eager('activities.[locDetailsView, sport, creator]')
     .modifyEager('activities', function(builder) {
+      if (sportIdsArr) {
+        builder.whereIn('sportId', sportIdsArr);
+      }
       builder.orderBy('startTime');
       builder.limit(n);
     })

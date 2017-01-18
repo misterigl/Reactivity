@@ -1,7 +1,0 @@
-
----- AWS Postgeres ----
-Steps to set up reactivity postgres AWS:
-1. `create extension postgis`
-- Tiger not used in our implementation, but details available for this at:
-  http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.html
-

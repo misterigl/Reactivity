@@ -1,5 +1,6 @@
 var apiRouter = require('express').Router();
 var dbMethods = require('../../db/dbMethods');
+var moment = require('moment');
 
 apiRouter.get('/activities/:id', function(req, res) {
   dbMethods.getActivityById(req.params.id, req.user.id)
@@ -19,8 +20,11 @@ apiRouter.get('/activities/:id', function(req, res) {
 apiRouter.post('/activities', dbMethods.postActivity);
 
 apiRouter.get('/activities/mine/:n', function(req, res) {
+  var sportIdsArr = req.query.sportIds ? JSON.parse(req.query.sportIds) : null;
+  var startTime = req.query.start || moment().subtract(1, 'hour').utc();
+  var endTime = req.query.end || null;
   var n = req.params.n;
-  dbMethods.getUserActivities(req.user.id, n)
+  dbMethods.getUserActivities(req.user.id, n, sportIdsArr, startTime, endTime)
     .then(function(activities) {
       res.json(activities);
     })
@@ -32,7 +36,10 @@ apiRouter.get('/activities/mine/:n', function(req, res) {
 
 apiRouter.get('/activities/myfriends/:n', function(req, res) {
   var n = req.params.n;
-  dbMethods.getUsersFriendsActivities(req.user.id, n)
+  var sportIdsArr = req.query.sportIds ? JSON.parse(req.query.sportIds) : null;
+  var startTime = req.query.start || moment().subtract(1, 'hour').utc();
+  var endTime = req.query.end || null;
+  dbMethods.getUsersFriendsActivities(req.user.id, n, sportIdsArr, startTime, endTime)
     .then(function(activities) {
       res.json(activities);
     })
@@ -46,8 +53,11 @@ apiRouter.get('/activities/nearby/:lat/:long/:n?', function(req, res) {
   var lat = req.params.lat;
   var long = req.params.long;
   var n = req.params.n || 25;
+  var sportIdsArr = req.query.sportIds ? JSON.parse(req.query.sportIds) : null;
+  var startTime = req.query.start || moment().subtract(1, 'hour').utc();
+  var endTime = req.query.end || null;
 
-  dbMethods.activitiesNearby(lat, long, n)
+  dbMethods.activitiesNearby(lat, long, n, sportIdsArr, startTime, endTime)
     .then(function(results) {
       res.json(results);
     })

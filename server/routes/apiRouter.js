@@ -36,7 +36,10 @@ apiRouter.get('/activities/mine/:n', function(req, res) {
 
 apiRouter.get('/activities/myfriends/:n', function(req, res) {
   var n = req.params.n;
-  dbMethods.getUsersFriendsActivities(req.user.id, n)
+  var sportIdsArr = req.query.sportIds ? JSON.parse(req.query.sportIds) : null;
+  var startTime = req.query.start || moment().subtract(1, 'hour').utc();
+  var endTime = req.query.end || null;
+  dbMethods.getUsersFriendsActivities(req.user.id, n, sportIdsArr, startTime, endTime)
     .then(function(activities) {
       res.json(activities);
     })

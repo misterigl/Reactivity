@@ -5,6 +5,7 @@ var moment = require('moment');
 var Activity = require('./models/Activity.js');
 var User = require('./models/User.js');
 var Sport = require('./models/Sport.js');
+var LocDetailsView = require('./models/LocDetailsView.js');
 
 
 exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTime) {
@@ -12,6 +13,13 @@ exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTim
   var long = long.toString();
   return Activity
     .query()
+    // .select(
+    //   'activities.id', 'activities.title', 'activities.minParticipants', 
+    //   'activities.maxParticipants', 'activities.status', 'activities.description', 
+    //   'activities.startTime', 'activities.endTime', 'activities.photoUrl', 
+    //   LocDetailsView.raw(st.distance('locDetailsView.geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326)))
+    // )
+    .select('activities.*', LocDetailsView.raw(st.distance(st.geography(st.transform('locDetailsView.geom', 4326)), st.geography(st.transform(st.geomFromText('Point(' + lat + ' ' + long + ')', 4326), 4326)))))
     .modify(function(builder) {
       if (sportIdsArr) {
         builder.whereIn('sportId', sportIdsArr);
@@ -23,9 +31,15 @@ exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTim
     })
     .eagerAlgorithm(Activity.JoinEagerAlgorithm)
     .eager('[locDetailsView, sport, creator]')
-    .orderByRaw('"locDetailsView"."geom" <-> ' + st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
+    // .modifyEager('locDetailsView', function(builder) {
+    //   // builder.select('*', st.distance('geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326)));
+    //   builder.select('*', LocDetailsView.raw(st.distance('loc_details_view.geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))));
+    // })
+    .orderByRaw('"locDetailsView"."geom" <-> ' + st.geomFromText('Point(' + lat + ' ' + long + ')', 4326) + '::geometry')
+    // .orderByRaw('"locDetailsView"."geom" <-> SRID=4326;POINT(' + lat + ' ' + long + ')::geometry')
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
     .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
+    .debug()
     .limit(n)
     .then(function(results) {
       return results;
@@ -88,13 +102,19 @@ exports.postActivity = function(req, res) {
     });
 };
 
-exports.getUsersFriendsActivities = function(userId, n) {
+exports.getUsersFriendsActivities = function(userId, n, sportIdsArr, startTime, endTime) {
   return User
     .query()
     .where('id', userId)
     .eager('friendsActivities.[creator]')
     .modifyEager('friendsActivities', function(builder) {
-      builder.where('startTime', '>=', new Date());
+      if (sportIdsArr) {
+        builder.whereIn('sportId', sportIdsArr);
+      }
+      builder.where('startTime', '>=', startTime);
+      if (endTime) {
+        builder.where('endTime', '<=', endTime);
+      }
       builder.orderBy('startTime');
       builder.limit(n);
     })

@@ -82,6 +82,10 @@ apiRouter.get('/profile/:idOrUsername', function(req, res) {
     });
 });
 
+//UPDATE PROFILE
+apiRouter.patch('/profile/:id', dbMethods.editProfile);
+apiRouter.patch('/interests', dbMethods.editInterests);
+
 //************************************************
 //                   FRIENDS
 //************************************************

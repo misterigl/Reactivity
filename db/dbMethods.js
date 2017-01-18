@@ -377,6 +377,56 @@ exports.signupUser = function(req, res) {
     });
 };
 
+//************************************************
+//                UPDATE ROUTES
+//************************************************
+
+exports.editProfile = function(req, res) {
+  var userId = req.user.id;
+
+  User
+    .query()
+    .patchAndFetchById(userId, {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      bioText: req.body.bioText,
+      profileUrl: req.body.profileUrl,
+    })
+    .then((newUser) => {
+      res.send('Success');
+    })
+    .catch((err) => {
+      res.status(500).send('Server error');
+    });
+};
+
+exports.editInterests = function(req, res) {
+  var userId = req.user.id;
+  var interests = req.body.interests;
+
+  User
+    .query()
+    .where('id', userId)
+    .first()
+    .then((userToEdit) => {
+      return userToEdit.$relatedQuery('interests').unrelate();
+    })
+    .then(() => {
+      User
+        .query()
+        .where('id', userId)
+        .first()
+        .then((userToEdit) => {
+          return userToEdit.$relatedQuery('interests').relate(interests);
+        })
+        .then((newUser) => {
+          res.send('Success');
+        })
+        .catch((err) => {
+          res.status(500).send('Server error');
+        });
+    });
+};
 
 //************************************************
 //                   SPORTS

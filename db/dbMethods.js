@@ -24,7 +24,7 @@ exports.activitiesNearby = function(lat, long, n) {
     });
 };
 
-exports.getUserActivities = function(userId, n, sportIdsArr) {
+exports.getUserActivities = function(userId, n, sportIdsArr, startTime, endTime) {
   return User
     .query()
     .where('id', userId)
@@ -33,6 +33,7 @@ exports.getUserActivities = function(userId, n, sportIdsArr) {
       if (sportIdsArr) {
         builder.whereIn('sportId', sportIdsArr);
       }
+      builder.where('startTime', '>=', startTime);
       builder.orderBy('startTime');
       builder.limit(n);
     })

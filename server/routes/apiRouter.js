@@ -1,5 +1,6 @@
 var apiRouter = require('express').Router();
 var dbMethods = require('../../db/dbMethods');
+var moment = require('moment');
 
 apiRouter.get('/activities/:id', function(req, res) {
   dbMethods.getActivityById(req.params.id, req.user.id)
@@ -20,8 +21,9 @@ apiRouter.post('/activities', dbMethods.postActivity);
 
 apiRouter.get('/activities/mine/:n', function(req, res) {
   var sportIdsArr = req.query.sportIds ? JSON.parse(req.query.sportIds) : null;
+  var startTime = req.query.start || moment().subtract(1, 'hour');
   var n = req.params.n;
-  dbMethods.getUserActivities(req.user.id, n, sportIdsArr)
+  dbMethods.getUserActivities(req.user.id, n, sportIdsArr, startTime)
     .then(function(activities) {
       res.json(activities);
     })

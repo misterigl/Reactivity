@@ -7,12 +7,20 @@ var User = require('./models/User.js');
 var Sport = require('./models/Sport.js');
 
 
-exports.activitiesNearby = function(lat, long, n) {
+exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTime) {
   var lat = lat.toString();
   var long = long.toString();
   return Activity
     .query()
-    .whereBetween('startTime', [moment(), moment().add(24, 'hours')])
+    .modify(function(builder) {
+      if (sportIdsArr) {
+        builder.whereIn('sportId', sportIdsArr);
+      }
+      builder.where('startTime', '>=', startTime);
+      if (endTime) {
+        builder.where('endTime', '<=', endTime);
+      }
+    })
     .eagerAlgorithm(Activity.JoinEagerAlgorithm)
     .eager('[locDetailsView, sport, creator]')
     .orderByRaw('"locDetailsView"."geom" <-> ' + st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))
@@ -42,7 +50,6 @@ exports.getUserActivities = function(userId, n, sportIdsArr, startTime, endTime)
     })
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
     .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
-    .debug()
     .first()
     .then(function(user) {
       return user.activities;

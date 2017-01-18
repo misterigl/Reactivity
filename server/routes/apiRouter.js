@@ -21,9 +21,8 @@ apiRouter.post('/activities', dbMethods.postActivity);
 
 apiRouter.get('/activities/mine/:n', function(req, res) {
   var sportIdsArr = req.query.sportIds ? JSON.parse(req.query.sportIds) : null;
-  var startTime = req.query.start || moment().subtract(1, 'hour');
+  var startTime = req.query.start || moment().subtract(1, 'hour').utc();
   var endTime = req.query.end || null;
-  console.log(endTime);
   var n = req.params.n;
   dbMethods.getUserActivities(req.user.id, n, sportIdsArr, startTime, endTime)
     .then(function(activities) {
@@ -51,8 +50,11 @@ apiRouter.get('/activities/nearby/:lat/:long/:n?', function(req, res) {
   var lat = req.params.lat;
   var long = req.params.long;
   var n = req.params.n || 25;
+  var sportIdsArr = req.query.sportIds ? JSON.parse(req.query.sportIds) : null;
+  var startTime = req.query.start || moment().subtract(1, 'hour').utc();
+  var endTime = req.query.end || null;
 
-  dbMethods.activitiesNearby(lat, long, n)
+  dbMethods.activitiesNearby(lat, long, n, sportIdsArr, startTime, endTime)
     .then(function(results) {
       res.json(results);
     })

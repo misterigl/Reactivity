@@ -34,11 +34,15 @@ exports.getUserActivities = function(userId, n, sportIdsArr, startTime, endTime)
         builder.whereIn('sportId', sportIdsArr);
       }
       builder.where('startTime', '>=', startTime);
+      if (endTime) {
+        builder.where('endTime', '<=', endTime);
+      }
       builder.orderBy('startTime');
       builder.limit(n);
     })
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
     .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
+    .debug()
     .first()
     .then(function(user) {
       return user.activities;

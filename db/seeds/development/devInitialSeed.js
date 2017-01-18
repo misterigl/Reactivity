@@ -41,7 +41,7 @@ var createRandomActivity = function(minUserId, maxUserId, sportIds, cb) {
         city: faker.address.city(),
         state: 'California',
         postalCode: faker.address.zipCode('#####'),
-        geom: st.geomFromText('Point(' + randomSFLat() + ' ' + randomSFLong() + ')', 4326)
+        geom: st.geomFromText('Point(' + randomSFLong() + ' ' + randomSFLat() + ')', 4326)
       }],
       users: attendeeIds.map(function(id) { return { '#dbRef': id, status: 'confirmed' }; }).concat([{ '#dbRef': creatorId, status: 'admin' }])
     })
@@ -63,7 +63,7 @@ var createRandomUser = function(sportIds, cb) {
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       email: fakeUser + '@gmail.com',
-      lastLocation: st.geomFromText('Point(' + randomSFLat() + ' ' + randomSFLong() + ')', 4326),
+      lastLocation: st.geomFromText('Point(' + randomSFLong() + ' ' + randomSFLat() + ')', 4326),
       lastActive: faker.date.recent(),
       bioText: faker.hacker.phrase(),
       profileUrl: faker.image.avatar(),
@@ -72,14 +72,14 @@ var createRandomUser = function(sportIds, cb) {
           city: faker.address.city(),
           state: 'California',
           postalCode: faker.address.zipCode('#####'),
-          geom: st.geomFromText('Point(' + randomSFLat() + ' ' + randomSFLong() + ')', 4326),
+          geom: st.geomFromText('Point(' + randomSFLong() + ' ' + randomSFLat() + ')', 4326),
           locationName: 'home'
         }, 
         {
           city: faker.address.city(),
           state: 'California',
           postalCode: faker.address.zipCode('#####'),
-          geom: st.geomFromText('Point(' + randomSFLat() + ' ' + randomSFLong() + ')', 4326),
+          geom: st.geomFromText('Point(' + randomSFLong() + ' ' + randomSFLat() + ')', 4326),
           locationName: 'work'
         }
       ],

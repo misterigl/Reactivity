@@ -19,7 +19,8 @@ exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTim
     //   'activities.startTime', 'activities.endTime', 'activities.photoUrl',
     //   LocDetailsView.raw(st.distance('locDetailsView.geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326)))
     // )
-    .select('activities.*', 'activities.id', LocDetailsView.raw(st.distance(st.geography(st.transform('locDetailsView.geom', 4326)), st.geography(st.transform(st.geomFromText('Point(' + lat + ' ' + long + ')', 4326), 4326)))))
+
+    .select('activities.*', LocDetailsView.raw(st.distance(st.geography(st.transform('locDetailsView.geom', 4326)), st.geography(st.transform(st.geomFromText('Point(' + long + ' ' + lat + ')', 4326), 4326)))))
     .modify(function(builder) {
       if (sportIdsArr) {
         builder.whereIn('sportId', sportIdsArr);
@@ -35,8 +36,8 @@ exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTim
     //   // builder.select('*', st.distance('geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326)));
     //   builder.select('*', LocDetailsView.raw(st.distance('loc_details_view.geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326))));
     // })
-    .orderByRaw('"locDetailsView"."geom" <-> ' + st.geomFromText('Point(' + lat + ' ' + long + ')', 4326) + '::geometry')
-    // .orderByRaw('"locDetailsView"."geom" <-> SRID=4326;POINT(' + lat + ' ' + long + ')::geometry')
+    // .orderByRaw('"locDetailsView"."geom" <-> ' + st.geomFromText('Point(' + lat + ' ' + long + ')', 4326) + '::geometry')
+    .orderByRaw('"locDetailsView"."geom" <-> \'SRID=4326;POINT(' + long + ' ' + lat + ')\'::geometry')
     .omit(Activity, ['creatorId', 'locationId', 'sportId'])
     .omit(User, ['password', 'email', 'lastLocation', 'bioText'])
     // .debug()

@@ -9,7 +9,6 @@ var localVars = require('./localvars.js');
 
 exports.getCognitoToken = function(userId) {
   var params = {
-    // IdentityPoolId: localVars.INDENTITY_POOL_ID,
     IdentityPoolId: localVars.IDENTITY_POOL_ID,
     Logins: {
       'passport.reactivity': userId.toString() 

@@ -3,6 +3,8 @@ const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 var localvars = require('../lib/localvars.js');
+var env = process.env.NODE_ENV || 'development';
+var dbMethods = require('../../db/dbMethods.js');
 
 const s3 = new aws.S3({
   accessKeyId: localvars.AWS_ACCESS_KEY_ID,
@@ -22,14 +24,20 @@ const upload = multer({
       cb(null, {fieldName: file.fieldname});
     },
     key(req, file, cb) {
-      cb(null, '/profile/' + req.user.id + '/profilePic' + '.png');
+      cb(null, env + '/profile/' + req.user.id + '/profilePic' + '.png');
     }
   })
 });
 
 mediaRouter.post('/upload', upload.single('photo'), (req, res, next) => {
-  res.send('Success?');
-  res.json(req.file);
+  dbMethods.changeProfilePicUrl(req.user.id, req.file.location)
+    .then(function() {
+      res.json(req.file.location);
+    })
+    .catch(function(err) {
+      console.error('Error: ', err);
+      res.status(500).send('Server error');
+    });
 });
 
 module.exports = mediaRouter;

@@ -14,9 +14,9 @@ exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTim
   return Activity
     .query()
     // .select(
-    //   'activities.id', 'activities.title', 'activities.minParticipants', 
-    //   'activities.maxParticipants', 'activities.status', 'activities.description', 
-    //   'activities.startTime', 'activities.endTime', 'activities.photoUrl', 
+    //   'activities.id', 'activities.title', 'activities.minParticipants',
+    //   'activities.maxParticipants', 'activities.status', 'activities.description',
+    //   'activities.startTime', 'activities.endTime', 'activities.photoUrl',
     //   LocDetailsView.raw(st.distance('locDetailsView.geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326)))
     // )
     .select('activities.*', LocDetailsView.raw(st.distance(st.geography(st.transform('locDetailsView.geom', 4326)), st.geography(st.transform(st.geomFromText('Point(' + lat + ' ' + long + ')', 4326), 4326)))))
@@ -377,6 +377,55 @@ exports.signupUser = function(req, res) {
     });
 };
 
+//************************************************
+//                UPDATE ROUTES
+//************************************************
+
+exports.editProfile = function(req, res) {
+  var userId = req.user.id;
+
+  User
+    .query()
+    .patchAndFetchById(userId, {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      bioText: req.body.bioText,
+    })
+    .then((newUser) => {
+      res.send('Success');
+    })
+    .catch((err) => {
+      res.status(500).send('Server error');
+    });
+};
+
+exports.editInterests = function(req, res) {
+  var userId = req.user.id;
+  var interests = req.body.interests;
+
+  User
+    .query()
+    .where('id', userId)
+    .first()
+    .then((userToEdit) => {
+      return userToEdit.$relatedQuery('interests').unrelate();
+    })
+    .then(() => {
+      User
+        .query()
+        .where('id', userId)
+        .first()
+        .then((userToEdit) => {
+          return userToEdit.$relatedQuery('interests').relate(interests);
+        })
+        .then((newUser) => {
+          res.send('Success');
+        })
+        .catch((err) => {
+          res.status(500).send('Server error');
+        });
+    });
+};
 
 //************************************************
 //                   SPORTS

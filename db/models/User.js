@@ -21,15 +21,17 @@ class User extends Model {
     });
   }
   $beforeUpdate(options, context) {
-    return bcrypt.hash(this.password, 10)
-    .bind(this)
-    .then(function(hash) {
-      this.password = hash;
-      return;
-    })
-    .catch(function(err) {
-      console.error('Error hashing password:', err);
-    });
+    if (this.password) {
+      return bcrypt.hash(this.password, 10)
+      .bind(this)
+      .then(function(hash) {
+        this.password = hash;
+        return;
+      })
+      .catch(function(err) {
+        console.error('Error hashing password:', err);
+      });
+    }
   }
 }
 

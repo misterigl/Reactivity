@@ -11,6 +11,7 @@ var bodyParser = require('body-parser');
 var auth = require('./lib/auth.js');
 var apiRouter = require('./routes/apiRouter');
 var authRouter = require('./routes/authRouter');
+var authRouter = require('./routes/mediaRouter');
 require('./io.js')(io);
 
 app.use(morgan('dev'));
@@ -21,6 +22,7 @@ app.use(bodyParser.json());
 app.use(auth.initialize());
 app.use('/auth', authRouter);
 app.use('/api', auth.authenticate(), apiRouter);
+app.use('/media', auth.authenticate(), mediaRouter);
 
 app.use(express.static('client'));
 

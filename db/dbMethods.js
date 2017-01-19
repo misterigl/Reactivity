@@ -14,9 +14,9 @@ exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTim
   return Activity
     .query()
     // .select(
-    //   'activities.id', 'activities.title', 'activities.minParticipants', 
-    //   'activities.maxParticipants', 'activities.status', 'activities.description', 
-    //   'activities.startTime', 'activities.endTime', 'activities.photoUrl', 
+    //   'activities.id', 'activities.title', 'activities.minParticipants',
+    //   'activities.maxParticipants', 'activities.status', 'activities.description',
+    //   'activities.startTime', 'activities.endTime', 'activities.photoUrl',
     //   LocDetailsView.raw(st.distance('locDetailsView.geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326)))
     // )
     .select('activities.*', LocDetailsView.raw(st.distance(st.geography(st.transform('locDetailsView.geom', 4326)), st.geography(st.transform(st.geomFromText('Point(' + lat + ' ' + long + ')', 4326), 4326)))))
@@ -390,7 +390,6 @@ exports.editProfile = function(req, res) {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       bioText: req.body.bioText,
-      profileUrl: req.body.profileUrl,
     })
     .then((newUser) => {
       res.send('Success');

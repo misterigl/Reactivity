@@ -53,8 +53,8 @@ var createRandomActivity = function(minUserId, maxUserId, sportIds, cb) {
     });
 };
 
-var createRandomUser = function(sportIds, cb) {
-  var fakeUser = faker.internet.userName() + faker.random.number(999);
+var createRandomUser = function(optionalUsername, sportIds, cb) {
+  var fakeUser = optionalUsername || faker.internet.userName() + faker.random.number(999);
   var randomSportIds = _.sample(sportIds, Math.floor(Math.random() * sportIds.length));
   User.query()
     .insertWithRelated({
@@ -132,14 +132,14 @@ exports.seed = function(knex, Promise) {
   })
 
   // Create users without connections/activities pre-linked
-  .then(function() {
-    return Promise.all([
-      User.query().insert({username: 'nate', password: 'nate', email: 'nate@gmail.com', firstName: 'Nate', lastName: 'Graf', bioText: '\"This is ten percent luck, twenty percent skill, fifteen percent concentrated power of will. Five percent pleasure, fifty percent pain, and one hundred percent reason to remember the name.\" 😎'}),
-      User.query().insert({username: 'tyler', password: 'tyler', email: 'tyler@gmail.com', firstName: 'Tyler', lastName: 'Gassman'}),
-      User.query().insert({username: 'jarob', password: 'jarob', email: 'jarob@gmail.com', firstName: 'Jarob', lastName: 'Gilliam'}),
-      User.query().insert({username: 'michael', password: 'michael', email: 'michael@gmail.com', firstName: 'Michael', lastName: 'Ilg'})
-    ]);
-  })
+  // .then(function() {
+  //   return Promise.all([
+  //     User.query().insert({username: 'nate', password: 'nate', email: 'nate@gmail.com', firstName: 'Nate', lastName: 'Graf', bioText: '\"This is ten percent luck, twenty percent skill, fifteen percent concentrated power of will. Five percent pleasure, fifty percent pain, and one hundred percent reason to remember the name.\" 😎'}),
+  //     User.query().insert({username: 'tyler', password: 'tyler', email: 'tyler@gmail.com', firstName: 'Tyler', lastName: 'Gassman'}),
+  //     User.query().insert({username: 'jarob', password: 'jarob', email: 'jarob@gmail.com', firstName: 'Jarob', lastName: 'Gilliam'}),
+  //     User.query().insert({username: 'michael', password: 'michael', email: 'michael@gmail.com', firstName: 'Michael', lastName: 'Ilg'})
+  //   ]);
+  // })
 
   // Create sports
   .then(function() {
@@ -151,12 +151,25 @@ exports.seed = function(knex, Promise) {
     });
   })
 
+  // Create admin user for convenience
+  .then(function(sportIds) {
+    return new Promise(function(resolve, reject) {
+      createRandomUser('admin', sportIds, function(err, result) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(sportIds);
+        }
+      });
+    });
+  })
+
   // Insert 200 users
   .then(function(sportIds) {
     console.log('Inserting 200 users...');
     return new Promise(function(resolve, reject) {
       async.times(200, function(n, next) {
-        createRandomUser(sportIds, function(err, result) {
+        createRandomUser(null, sportIds, function(err, result) {
           next(err, result);
         });
       }, function(err, results) {

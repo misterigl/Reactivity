@@ -5,13 +5,12 @@ var io = require('socket.io')(server);
 var path = require('path');
 var morgan = require('morgan');
 var colors = require('colors/safe');
-// var passport = require('passport');
 var bodyParser = require('body-parser');
 
 var auth = require('./lib/auth.js');
 var apiRouter = require('./routes/apiRouter');
 var authRouter = require('./routes/authRouter');
-var authRouter = require('./routes/mediaRouter');
+var mediaRouter = require('./routes/mediaRouter');
 require('./io.js')(io);
 
 app.use(morgan('dev'));

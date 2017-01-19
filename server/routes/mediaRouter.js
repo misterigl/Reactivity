@@ -27,7 +27,9 @@ const upload = multer({
   })
 });
 
-app.post('/upload', upload.single('photo'), (req, res, next) => {
+mediaRouter.post('/upload', upload.single('photo'), (req, res, next) => {
   res.send('Success?');
   res.json(req.file);
 });
+
+module.exports = mediaRouter;

@@ -20,7 +20,7 @@ exports.activitiesNearby = function(lat, long, n, sportIdsArr, startTime, endTim
     //   LocDetailsView.raw(st.distance('locDetailsView.geom', st.geomFromText('Point(' + lat + ' ' + long + ')', 4326)))
     // )
 
-    .select('activities.*', LocDetailsView.raw(st.distance(st.geography(st.transform('locDetailsView.geom', 4326)), st.geography(st.transform(st.geomFromText('Point(' + long + ' ' + lat + ')', 4326), 4326)))))
+    .select('activities.*', 'activities.id', LocDetailsView.raw(st.distance(st.geography(st.transform('locDetailsView.geom', 4326)), st.geography(st.transform(st.geomFromText('Point(' + long + ' ' + lat + ')', 4326), 4326)))))
     .modify(function(builder) {
       if (sportIdsArr) {
         builder.whereIn('sportId', sportIdsArr);
@@ -90,7 +90,7 @@ exports.postActivity = function(req, res) {
         city: req.body.city,
         state: req.body.state,
         postalCode: req.body.postalCode,
-        geom: st.geomFromText('Point(' + req.body.latitude + ' ' + req.body.longitude + ')', 4326)
+        geom: st.geomFromText('Point(' + req.body.longitude + ' ' + req.body.latitude + ')', 4326)
       }],
       users: [{ '#dbRef': req.user.id, status: 'admin' }]
     })
@@ -357,7 +357,7 @@ exports.signupUser = function(req, res) {
         city: req.body.homeLocation.city,
         state: req.body.homeLocation.state,
         postalCode: req.body.homeLocation.postalCode,
-        geom: st.geomFromText('Point(' + req.body.homeLocation.latitude + ' ' + req.body.homeLocation.longitude + ')', 4326),
+        geom: st.geomFromText('Point(' + req.body.homeLocation.longitude + ' ' + req.body.homeLocation.latitude + ')', 4326),
         locationName: 'home'
       }],
       interests: req.body.interests.map(function(interestId) {

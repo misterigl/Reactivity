@@ -56,7 +56,8 @@ authRouter.post('/login', function(req, res) {
       } else {
         var payload = { id: user.id, exp: moment().add(30, 'days').unix() };
         return Promise.all([
-          getCognitoToken(user.id),
+          // getCognitoToken(user.id),
+          {},
           jwt.encode(payload, auth.cfg.jwtSecret),
           user
         ]);

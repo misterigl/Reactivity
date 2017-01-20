@@ -107,7 +107,7 @@ exports.getUsersFriendsActivities = function(userId, n, sportIdsArr, startTime, 
   return User
     .query()
     .where('id', userId)
-    .eager('friendsActivities.[creator]')
+    .eager('friendsActivities.[creator, sport]')
     .modifyEager('friendsActivities', function(builder) {
       if (sportIdsArr) {
         builder.whereIn('sportId', sportIdsArr);
